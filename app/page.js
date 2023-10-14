@@ -1,95 +1,84 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+"use client"
+import { useState } from 'react';
 
-export default function Home() {
+export default function FruitList() {
+  const [fruits, setFruits] = useState([]);
+  const [newFruitName, setNewFruitName] = useState('');
+  const [newFruitColor, setNewFruitColor] = useState('');
+  const [filterText, setFilterText] = useState('');
+
+  const addFruit = () => {
+    if (newFruitName.trim() !== '') {
+      setFruits([...fruits, { name: newFruitName, color: newFruitColor }]);
+      setNewFruitName('');
+      setNewFruitColor('');
+    }
+  };
+
+  const updateFruit = (index, updatedName, updatedColor) => {
+    const updatedFruits = [...fruits];
+    updatedFruits[index].name = updatedName;
+    updatedFruits[index].color = updatedColor;
+    setFruits(updatedFruits);
+  };
+
+  const deleteFruit = (index) => {
+    const updatedFruits = [...fruits];
+    updatedFruits.splice(index, 1);
+    setFruits(updatedFruits);
+  };
+
+  const filteredFruits = fruits.filter(
+    (fruit) =>
+      fruit.name.toLowerCase().includes(filterText.toLowerCase()) ||
+      fruit.color.toLowerCase().includes(filterText.toLowerCase())
+  );
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
+    <div>
+      <h1>Fruit List with CRUD</h1>
+      <h2>Add New Fruit</h2>
+      <div>
+        <label htmlFor="fruitName">Fruit Name:</label>
+        <input
+          type="text"
+          id="fruitName"
+          value={newFruitName}
+          onChange={(e) => setNewFruitName(e.target.value)}
         />
+        <label htmlFor="fruitColor">Color:</label>
+        <input
+          type="text"
+          id="fruitColor"
+          value={newFruitColor}
+          onChange={(e) => setNewFruitColor(e.target.value)}
+        />
+        <button onClick={addFruit}>Add Fruit</button>
       </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+      <h2>Filter</h2>
+      <input
+        type="text"
+        placeholder="Enter keyword to filter"
+        value={filterText}
+        onChange={(e) => setFilterText(e.target.value)}
+      />
+      <ul>
+        {filteredFruits.map((fruit, index) => (
+          <li key={index}>
+            <span style={{ color: fruit.color }}>{fruit.name}</span> - {fruit.color}
+            <button
+              onClick={() => {
+                const updatedName = prompt('Enter a new name:', fruit.name);
+                const updatedColor = prompt('Enter a new color:', fruit.color);
+                updateFruit(index, updatedName, updatedColor);
+              }}
+            >
+              Edit
+            </button>
+            <button onClick={() => deleteFruit(index)}>Delete</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
